@@ -39,6 +39,7 @@ namespace swss {
 #define APP_FDB_TABLE_NAME                "FDB_TABLE"
 #define APP_PFC_WD_TABLE_NAME             "PFC_WD_TABLE"
 #define APP_SWITCH_TABLE_NAME             "SWITCH_TABLE"
+#define APP_NEXT_HOP_GROUP_TABLE_NAME	  "NEXT_HOP_GROUP_TABLE"
 
 #define APP_COPP_TABLE_NAME               "COPP_TABLE"
 #define APP_VRF_TABLE_NAME                "VRF_TABLE"
