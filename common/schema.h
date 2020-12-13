@@ -34,6 +34,7 @@ namespace swss {
 #define APP_INTF_TABLE_NAME               "INTF_TABLE"
 #define APP_NEIGH_TABLE_NAME              "NEIGH_TABLE"
 #define APP_ROUTE_TABLE_NAME              "ROUTE_TABLE"
+#define APP_LABEL_ROUTE_TABLE_NAME        "LABEL_ROUTE_TABLE"
 #define APP_TUNNEL_DECAP_TABLE_NAME       "TUNNEL_DECAP_TABLE"
 #define APP_FDB_TABLE_NAME                "FDB_TABLE"
 #define APP_PFC_WD_TABLE_NAME             "PFC_WD_TABLE"
