@@ -56,7 +56,7 @@ public:
 
     const std::string to_string() const
     {
-        string str;
+        std::string str;
         for (auto it = m_labelstack.begin(); it != m_labelstack.end(); ++it)
         {
             if (it != m_labelstack.begin())
