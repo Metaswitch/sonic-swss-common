@@ -405,10 +405,12 @@ constexpr const char *RedisContext::DEFAULT_UNIXSOCKET;
 
 RedisContext::~RedisContext()
 {
-    redisFree(m_conn);
+    if(m_conn)
+        redisFree(m_conn);
 }
 
 RedisContext::RedisContext()
+    : m_conn(NULL)
 {
 }
 
