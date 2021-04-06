@@ -103,7 +103,7 @@ namespace swss {
 #define APP_BUFFER_PORT_EGRESS_PROFILE_LIST_NAME    "BUFFER_PORT_EGRESS_PROFILE_LIST_TABLE"
 
 #define APP_NEIGH_RESOLVE_TABLE_NAME        "NEIGH_RESOLVE_TABLE"
-	
+
 #define APP_REJECTED_CONFIG                 "REJECTED_CONFIG"
 
 /***** TO BE REMOVED *****/
@@ -306,7 +306,7 @@ namespace swss {
 #define CFG_MCLAG_TABLE_NAME                        "MCLAG_DOMAIN"
 #define CFG_MCLAG_INTF_TABLE_NAME                   "MCLAG_INTERFACE"
 #define CFG_MCLAG_UNIQUE_IP_TABLE_NAME              "MCLAG_UNIQUE_IP"
-  
+
 #define CFG_PORT_STORM_CONTROL_TABLE_NAME           "PORT_STORM_CONTROL"
 
 #define CFG_RATES_TABLE_NAME                        "RATES"
@@ -338,6 +338,9 @@ namespace swss {
 #define CHASSIS_APP_LAG_MEMBER_TABLE_NAME           "SYSTEM_LAG_MEMBER_TABLE"
 
 #define CFG_CHASSIS_MODULE_TABLE                    "CHASSIS_MODULE"
+
+#define CFG_DSCP_TO_FC_MAP_TABLE_NAME               "DSCP_TO_FC_MAP_TABLE"
+#define CFG_EXP_TO_FC_MAP_TABLE_NAME                "EXP_TO_FC_MAP_TABLE"
 
 /***** STATE DATABASE *****/
 
