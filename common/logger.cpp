@@ -91,15 +91,18 @@ void Logger::linkToDbWithOutput(const std::string &dbName, const PriorityChangeN
 
     // Initialize internal DB with observer
     logger.m_settingChangeObservers.insert(std::make_pair(dbName, std::make_pair(prioNotify, outputNotify)));
+    printf("1b\n");
     DBConnector db("LOGLEVEL_DB", 0);
+    printf("2\n");
     auto keys = db.keys("*");
+    printf("Got keys\n");
 
     std::string key = dbName + ":" + dbName;
     std::string prio, output;
     bool doUpdate = false;
     auto prioPtr = db.hget(key, DAEMON_LOGLEVEL);
     auto outputPtr = db.hget(key, DAEMON_LOGOUTPUT);
-
+    printf("Got entry\n");
     if ( prioPtr == nullptr )
     {
         prio = defPrio;
@@ -128,12 +131,14 @@ void Logger::linkToDbWithOutput(const std::string &dbName, const PriorityChangeN
         FieldValueTuple fvOutput(DAEMON_LOGOUTPUT, output);
         std::vector<FieldValueTuple>fieldValues = { fvLevel, fvOutput };
         table.set(dbName, fieldValues);
+        printf("Set entry\n");
     }
 
     logger.m_currentPrios[dbName] = prio;
     logger.m_currentOutputs[dbName] = output;
     prioNotify(dbName, prio);
     outputNotify(dbName, output);
+    printf("Exit\n");
 }
 
 void Logger::linkToDb(const std::string &dbName, const PriorityChangeNotify& prioNotify, const std::string& defPrio)
@@ -143,7 +148,9 @@ void Logger::linkToDb(const std::string &dbName, const PriorityChangeNotify& pri
 
 void Logger::linkToDbNative(const std::string &dbName)
 {
+    printf("Enter swss common\n");
     auto& logger = getInstance();
+    printf("Got instance\n");
 
     linkToDb(dbName, swssPrioNotify, "NOTICE");
     logger.m_settingThread.reset(new std::thread(&Logger::settingThread, &logger));

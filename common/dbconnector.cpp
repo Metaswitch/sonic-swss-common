@@ -23,6 +23,7 @@ void SonicDBConfig::parseDatabaseConfig(const string &file,
                     std::unordered_map<int, std::string> &separator_entry)
 {
     ifstream i(file);
+    printf("parseDatabaseConfig 1\n");
     if (i.good())
     {
         try
@@ -52,17 +53,20 @@ void SonicDBConfig::parseDatabaseConfig(const string &file,
 
         catch (domain_error& e)
         {
+    printf("parseDatabaseConfig 2\n");
             SWSS_LOG_ERROR("key doesn't exist in json object, NULL value has no iterator >> %s\n", e.what());
             throw runtime_error("key doesn't exist in json object, NULL value has no iterator >> " + string(e.what()));
         }
         catch (exception &e)
         {
+    printf("parseDatabaseConfig 3\n");
             SWSS_LOG_ERROR("Sonic database config file syntax error >> %s\n", e.what());
             throw runtime_error("Sonic database config file syntax error >> " + string(e.what()));
         }
     }
     else
     {
+    printf("parseDatabaseConfig 4\n");
         SWSS_LOG_ERROR("Sonic database config file doesn't exist at %s\n", file.c_str());
         throw runtime_error("Sonic database config file doesn't exist at " + file);
     }
@@ -166,17 +170,23 @@ void SonicDBConfig::initialize(const string &file)
     std::unordered_map<std::string, SonicDBInfo> db_entry;
     std::unordered_map<std::string, RedisInstInfo> inst_entry;
     std::unordered_map<int, std::string> separator_entry;
+
+    printf("initialize 1\n");
     std::lock_guard<std::recursive_mutex> guard(m_db_info_mutex);
+    printf("initialize 2\n");
 
     SWSS_LOG_ENTER();
+    printf("initialize 3\n");
 
     if (m_init)
     {
         SWSS_LOG_ERROR("SonicDBConfig already initialized");
+    printf("initialize 4\n");
         throw runtime_error("SonicDBConfig already initialized");
     }
 
     parseDatabaseConfig(file, inst_entry, db_entry, separator_entry);
+    printf("initialize 5\n");
     m_inst_info[EMPTY_NAMESPACE] = inst_entry;
     m_db_info[EMPTY_NAMESPACE] = db_entry;
     m_db_separator[EMPTY_NAMESPACE] = separator_entry;
@@ -211,35 +221,46 @@ void SonicDBConfig::validateNamespace(const string &netns)
 
 SonicDBInfo& SonicDBConfig::getDbInfo(const std::string &dbName, const std::string &netns)
 {
+    printf("getDbInfo\n");
     std::lock_guard<std::recursive_mutex> guard(m_db_info_mutex);
+    printf("getDbInfo 2\n");
 
     SWSS_LOG_ENTER();
+    printf("getDbInfo 3\n");
 
     if (!m_init)
         initialize(DEFAULT_SONIC_DB_CONFIG_FILE);
+    printf("getDbInfo 4\n");
 
     if (!netns.empty())
     {
         if (!m_global_init)
         {
             SWSS_LOG_THROW("Initialize global DB config using API SonicDBConfig::initializeGlobalConfig");
+
+    printf("getDbInfo 5\n");
         }
     }
     auto foundNetns = m_db_info.find(netns);
+    printf("getDbInfo 6\n");
     if (foundNetns == m_db_info.end())
     {
         string msg = "Namespace " + netns + " is not a valid namespace name in config file";
+    printf("getDbInfo 7\n");
         SWSS_LOG_ERROR("%s", msg.c_str());
         throw out_of_range(msg);
     }
     auto& infos = foundNetns->second;
     auto foundDb = infos.find(dbName);
+    printf("getDbInfo 8\n");
     if (foundDb == infos.end())
     {
         string msg = "Failed to find " + dbName + " database in " + netns + " namespace";
+    printf("getDbInfo 9\n");
         SWSS_LOG_ERROR("%s", msg.c_str());
         throw out_of_range(msg);
     }
+    printf("getDbInfo 10\n");
     return foundDb->second;
 }
 
@@ -247,33 +268,42 @@ RedisInstInfo& SonicDBConfig::getRedisInfo(const std::string &dbName, const std:
 {
     std::lock_guard<std::recursive_mutex> guard(m_db_info_mutex);
 
+    printf("11\n");
     SWSS_LOG_ENTER();
+    printf("12\n");
 
     if (!m_init)
         initialize(DEFAULT_SONIC_DB_CONFIG_FILE);
+    printf("13\n");
 
     if (!netns.empty())
     {
         if (!m_global_init)
         {
             SWSS_LOG_THROW("Initialize global DB config using API SonicDBConfig::initializeGlobalConfig");
+    printf("14\n");
         }
     }
     auto foundNetns = m_inst_info.find(netns);
+    printf("15\n");
     if (foundNetns == m_inst_info.end())
     {
         string msg = "Namespace " + netns + " is not a valid namespace name in Redis instances in config file";
+    printf("16\n");
         SWSS_LOG_ERROR("%s", msg.c_str());
         throw out_of_range(msg);
     }
     auto& redisInfos = foundNetns->second;
+    printf("17\n");
     auto foundRedis = redisInfos.find(getDbInst(dbName, netns));
+    printf("18\n");
     if (foundRedis == redisInfos.end())
     {
         string msg = "Failed to find the Redis instance for " + dbName + " database in " + netns + " namespace";
         SWSS_LOG_ERROR("%s", msg.c_str());
         throw out_of_range(msg);
     }
+    printf("19\n");
     return foundRedis->second;
 }
 
@@ -284,6 +314,7 @@ string SonicDBConfig::getDbInst(const string &dbName, const string &netns)
 
 int SonicDBConfig::getDbId(const string &dbName, const string &netns)
 {
+    printf("getDbId");
     return getDbInfo(dbName, netns).dbId;
 }
 
@@ -345,6 +376,7 @@ string SonicDBConfig::getSeparator(const DBConnector* db)
 
 string SonicDBConfig::getDbSock(const string &dbName, const string &netns)
 {
+    printf("10\n");
     return getRedisInfo(dbName, netns).unixSocketPath;
 }
 
@@ -432,32 +464,40 @@ void RedisContext::initContext(const char *host, int port, const timeval *tv)
 {
     if (tv)
     {
+        printf("initContext 1\n");
         m_conn = redisConnectWithTimeout(host, port, *tv);
     }
     else
     {
+        printf("initContext 2\n");
         m_conn = redisConnect(host, port);
     }
 
-    if (m_conn->err)
+    if (m_conn->err) {
+        printf("initContext 3\n");
         throw system_error(make_error_code(errc::address_not_available),
                            "Unable to connect to redis");
+    }
 }
 
 void RedisContext::initContext(const char *path, const timeval *tv)
 {
     if (tv)
     {
+        printf("initContext 4\n");
         m_conn = redisConnectUnixWithTimeout(path, *tv);
     }
     else
     {
+        printf("initContext 5\n");
         m_conn = redisConnectUnix(path);
     }
 
-    if (m_conn->err)
+    if (m_conn->err) {
+        printf("initContext 6\n");
         throw system_error(make_error_code(errc::address_not_available),
                            "Unable to connect to redis (unix-socket)");
+    }
 }
 
 redisContext *RedisContext::getContext() const
@@ -521,6 +561,7 @@ DBConnector::DBConnector(int dbId, const RedisContext& ctx)
     , m_dbId(dbId)
     , m_namespace(EMPTY_NAMESPACE)
 {
+    printf("2a\n");
     select(this);
 }
 
@@ -529,6 +570,7 @@ DBConnector::DBConnector(int dbId, const string& hostname, int port,
     : m_dbId(dbId)
     , m_namespace(EMPTY_NAMESPACE)
 {
+    printf("2b\n");
     struct timeval tv = {0, (suseconds_t)timeout * 1000};
     struct timeval *ptv = timeout ? &tv : NULL;
     initContext(hostname.c_str(), port, ptv);
@@ -540,6 +582,7 @@ DBConnector::DBConnector(int dbId, const string& unixPath, unsigned int timeout)
     : m_dbId(dbId)
     , m_namespace(EMPTY_NAMESPACE)
 {
+    printf("2c\n");
     struct timeval tv = {0, (suseconds_t)timeout * 1000};
     struct timeval *ptv = timeout ? &tv : NULL;
     initContext(unixPath.c_str(), ptv);
@@ -553,6 +596,7 @@ DBConnector::DBConnector(const string& dbName, unsigned int timeout, bool isTcpC
     , m_namespace(netns)
 {
     struct timeval tv = {0, (suseconds_t)timeout * 1000};
+    printf("2d\n");
     struct timeval *ptv = timeout ? &tv : NULL;
     if (isTcpConn)
     {
@@ -560,15 +604,19 @@ DBConnector::DBConnector(const string& dbName, unsigned int timeout, bool isTcpC
     }
     else
     {
+    printf("3\n");
         initContext(SonicDBConfig::getDbSock(dbName, netns).c_str(), ptv);
+    printf("4\n");
     }
 
     select(this);
+    printf("5\n");
 }
 
 DBConnector::DBConnector(const string& dbName, unsigned int timeout, bool isTcpConn)
     : DBConnector(dbName, timeout, isTcpConn, EMPTY_NAMESPACE)
 {
+    printf("2e\n");
     // Empty contructor
 }
 
@@ -695,13 +743,17 @@ vector<string> DBConnector::keys(const string &key)
 {
     RedisCommand skeys;
     skeys.format("KEYS %s", key.c_str());
+    printf("6\n");
     RedisReply r(this, skeys, REDIS_REPLY_ARRAY);
+    printf("7\n");
 
     auto ctx = r.getContext();
+    printf("8\n");
 
     vector<string> list;
     for (unsigned int i = 0; i < ctx->elements; i++)
         list.emplace_back(ctx->element[i]->str);
+    printf("9\n");
 
     return list;
 }
