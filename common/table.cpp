@@ -149,17 +149,22 @@ void Table::set(const string &key, const vector<FieldValueTuple> &values,
 
     m_pipe->push(cmd, REDIS_REPLY_STATUS);
 
+    if (!m_buffered)
+    {
+        m_pipe->flush();
+    }
+
     if (ttl != DEFAULT_DB_TTL)
     {
       // Configure the expire time for the entry that was just added
       cmd.formatEXPIRE(getKeyName(key), ttl);
-    }
 
-    m_pipe->push(cmd, REDIS_REPLY_STATUS);
+      m_pipe->push(cmd, REDIS_REPLY_INTEGER);
 
-    if (!m_buffered)
-    {
-        m_pipe->flush();
+      if (!m_buffered)
+      {
+          m_pipe->flush();
+      }
     }
 }
 
