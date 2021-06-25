@@ -107,6 +107,8 @@ namespace swss {
 
 #define APP_REJECTED_CONFIG                 "REJECTED_CONFIG"
 
+#define APP_ISIS_ROUTER_LSP_STATE           "ISIS_ROUTER_LSP_STATE"
+
 /***** TO BE REMOVED *****/
 
 #define APP_TC_TO_QUEUE_MAP_TABLE_NAME  "TC_TO_QUEUE_MAP_TABLE"
